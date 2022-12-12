@@ -1,0 +1,290 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+devtools::install_github("massonix/HCATonsilData", build_vignettes = TRUE)
+```
+
+```{r}
+library(HCATonsilData)
+library(SingleCellExperiment)
+library(ExperimentHub)
+library(ggplot2)
+```
+
+```{r}
+# Single cell RNA assay
+(sce <- HCATonsilData(assayType = "RNA", cellType = "All"))
+```
+```{r}
+table(sce$assay)
+```
+
+```{r}
+df <- as.data.frame(colData(sce))
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF") 
+ggplot(df, aes(UMAP_1_level_1, UMAP_2_level_1, col = annotation_level_1)) +
+  geom_point(shape = ".") +
+  scale_color_manual(values = cols) +
+  labs(title = "Annotation Level 1", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  guides(colour = guide_legend(override.aes = list(size = 2, shape = 16)))
+```
+
+```{r}
+listCellTypes(assayType = "RNA", cellType = "All")
+```
+```{r}
+# getting subpopulation plots
+
+# NBC-MBC
+nbc <- HCATonsilData(assayType = "RNA", cellType = "NBC-MBC")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650")
+df <- as.data.frame(colData(nbc))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "NBC-MBC", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# GCBC
+GCBC <- HCATonsilData(assayType = "RNA", cellType = "GCBC")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650")
+df <- as.data.frame(colData(GCBC))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "GCBC", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# PC
+PC <- HCATonsilData(assayType = "RNA", cellType = "PC")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(PC))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "PC", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# CD4-T
+cd4_t <- HCATonsilData(assayType = "RNA", cellType = "CD4-T")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5")
+df <- as.data.frame(colData(cd4_t))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "CD4-T", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# Th
+Th <- HCATonsilData(assayType = "RNA", cellType = "Th")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5")
+df <- as.data.frame(colData(Th))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "Th", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# CD8-T
+cd8_t <- HCATonsilData(assayType = "RNA", cellType = "CD8-T")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5")
+df <- as.data.frame(colData(cd8_t))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "CD8-T", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# ILC-NK
+ilc_nk <- HCATonsilData(assayType = "RNA", cellType = "ILC-NK")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5")
+df <- as.data.frame(colData(ilc_nk))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "ILC-NK", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# myeloid
+myeloid <- HCATonsilData(assayType = "RNA", cellType = "myeloid")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(myeloid))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "myeloid", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# FDC
+FDC <- HCATonsilData(assayType = "RNA", cellType = "FDC")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(FDC))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "FDC", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# Epithelial
+epithelial <- HCATonsilData(assayType = "RNA", cellType = "epithelial")
+df <- as.data.frame(colData(epithelial))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "Epithelial", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# PDC
+PDC <- HCATonsilData(assayType = "RNA", cellType = "PDC")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(PDC))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "PDC", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# preB
+preB <- HCATonsilData(assayType = "RNA", cellType = "preB")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(preB))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "preB", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+# preT
+preT <- HCATonsilData(assayType = "RNA", cellType = "preT")
+cols <- c("#5A5156", "#E4E1E3", "#F6222E", "#FE00FA", "#16FF32", "#3283FE",
+          "#FEAF16", "#B00068","#1CFFCE",  "#90AD1C", "#2ED9FF", "#f58207",
+          "#07f5e5", "#b907f5", "#07f51f", "#f5a2d1", "#a2f5a9", "#f5c4a2",
+          "#a2aef5", "#434966", "#436650", "#665743", "#c7aeab")
+df <- as.data.frame(colData(preT))
+ggplot(df, aes(UMAP_1_20220215, UMAP_2_20220215, col = annotation_20220215)) +
+  geom_point() +
+  scale_color_manual(values = cols) +
+  labs(title = "preT", x = "UMAP1", y = "UMAP2") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+```
+
+
+

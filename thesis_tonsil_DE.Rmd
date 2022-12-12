@@ -1,0 +1,152 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# Load packages
+library(Seurat)
+library(tidyverse)
+
+# Define function
+perform_dea <- function(seurat_obj, idents, ident.1, ident.2) {
+  x <- seurat_obj[[idents, drop = TRUE]]
+  if (length(x[x == ident.1]) < 4 | length(x[x == ident.2]) < 4) {
+    return(NULL)
+  }
+  Idents(seurat_obj) <- idents
+  if (ident.1 %in% Idents(seurat_obj) & ident.2 %in% Idents(seurat_obj)) {
+    df <- FindMarkers(
+      seurat_obj,
+      ident.1 = ident.1,
+      ident.2 = ident.2,
+      only.pos = FALSE,
+      logfc.threshold = 0.3,
+      verbose = TRUE
+    )
+    df <- df %>%
+      rownames_to_column(var = "gene") %>%
+      filter(p_val_adj < 0.001) %>%
+      arrange(desc(avg_logFC))
+    df 
+  } else {
+    return(NULL)
+  }
+}
+```
+
+```{r}
+# Load data
+seurat <- readRDS('./20220215_Th_seurat_obj.rds')
+```
+
+```{r}
+table(seurat$age_group)
+```
+
+```{r}
+# get TMS global aging gene list
+# aging_genes <- read.table(file = './global_aging_genes.tsv', sep = '\t', header = TRUE)
+# aging_genes$global_aging_genes <- toupper(aging_genes$global_aging_genes)
+# names(aging_genes)[names(aging_genes) == 'global_aging_genes'] <- 'genes'
+```
+
+# calculating genes up/downregulated in kids as compared to young adults/old adults
+```{r}
+Idents(seurat) <- "age_group"
+kid_df <- FindMarkers(seurat, ident.1 = "kid", ident.2 = NULL, test.use = "MAST")
+```
+
+```{r}
+# filter by p-value to get significantly differentially expressed genes
+kid_df <- setNames(cbind(rownames(kid_df), kid_df, row.names = NULL), c("genes", "p_val", "avg_log2FC", "pct.1", "pct.2", "p_val_adj"))
+kid_df <- kid_df[which(kid_df$p_val_adj < 0.05), ]
+kid_df$genes <- toupper(kid_df$genes)
+```
+
+```{r}
+# find genes that match with those in TMS global aging gene list
+sig_kid <- merge(kid_df, aging_genes, by='genes')
+down_20_kid <- sig_kid %>%
+  filter(avg_log2FC < 0) %>%
+  arrange(avg_log2FC) %>%
+  slice_head(n = 20)
+up_20_kid <- sig_kid %>%
+  filter(avg_log2FC > 0) %>%
+  arrange(-avg_log2FC) %>%
+  slice_head(n = 20)
+```
+
+
+```{r}
+# create bar graph, look at up/downregulation as compared to tabula muris senis and as compared to young adult/old adult
+top_20_kid <- rbind(down_20_kid, up_20_kid)
+
+ggplot(top_20_kid, aes(x = avg_log2FC, y = genes)) + geom_bar(stat = "identity", fill = "coral3") + scale_y_discrete(limits = top_20_kid$genes) + ggtitle("Th, Age group: Kid") + theme(plot.title = element_text(hjust = 0.5)) + geom_point(data = top_20_kid, aes(x = gag_score_coef*100, y = genes, color = "Normalized aging coefficient"))
+```
+
+
+# calculating genes up/downregulated in young adults
+```{r}
+young_df <- FindMarkers(seurat, ident.1 = "young_adult", ident.2 = NULL, test.use = "MAST")
+```
+
+```{r}
+# filter by p-value to get significantly differentially expressed genes
+young_df <- setNames(cbind(rownames(young_df), young_df, row.names = NULL), c("genes", "p_val", "avg_log2FC", "pct.1", "pct.2", "p_val_adj"))
+young_df <- young_df[which(young_df$p_val_adj < 0.05), ]
+young_df$genes <- toupper(young_df$genes)
+```
+
+```{r}
+# find genes that match with those in TMS global aging gene list
+sig_young <- merge(young_df, aging_genes, by='genes')
+down_20_young <- sig_young %>%
+  filter(avg_log2FC < 0) %>%
+  arrange(avg_log2FC) %>%
+  slice_head(n = 20)
+up_20_young <- sig_young %>%
+  filter(avg_log2FC > 0) %>%
+  arrange(-avg_log2FC) %>%
+  slice_head(n = 20)
+```
+
+```{r}
+# create bar graph, look at up/downregulation as compared to tabula muris senis and as compared to young adult/old adult
+top_20_young <- rbind(down_20_young, up_20_young)
+
+ggplot(top_20_young, aes(x = avg_log2FC, y = genes)) + geom_bar(stat = "identity", fill = "coral3") + scale_y_discrete(limits = top_20_young$genes) + ggtitle("Th, Age group: Young") + theme(plot.title = element_text(hjust = 0.5)) + geom_point(data = top_20_young, aes(x = gag_score_coef*100, y = genes, color = "Normalized aging coefficient"))
+```
+
+
+# calculating genes up/downregulated in old adults
+```{r}
+old_df <- FindMarkers(seurat, ident.1 = "old_adult", ident.2 = NULL, test.use = "MAST")
+```
+
+```{r}
+# filter by p-value to get significantly differentially expressed genes
+old_df <- setNames(cbind(rownames(old_df), old_df, row.names = NULL), c("genes", "p_val", "avg_log2FC", "pct.1", "pct.2", "p_val_adj"))
+old_df <- old_df[which(old_df$p_val_adj < 0.05), ]
+old_df$genes <- toupper(old_df$genes)
+```
+
+```{r}
+# find genes that match with those in TMS global aging gene list
+sig_old <- merge(old_df, aging_genes, by='genes')
+down_20_old <- sig_old %>%
+  filter(avg_log2FC < 0) %>%
+  arrange(avg_log2FC) %>%
+  slice_head(n = 20)
+up_20_old <- sig_old %>%
+  filter(avg_log2FC > 0) %>%
+  arrange(-avg_log2FC) %>%
+  slice_head(n = 20)
+```
+
+```{r}
+# create bar graph, look at up/downregulation as compared to tabula muris senis and as compared to young adult/old adult
+top_20_old <- rbind(down_20_old, up_20_old)
+
+ggplot(top_20_old, aes(x = avg_log2FC, y = genes)) + geom_bar(stat = "identity", fill = "coral3") + scale_y_discrete(limits = top_20_old$genes) + ggtitle("Th, Age group: Old") + theme(plot.title = element_text(hjust = 0.5)) + geom_point(data = top_20_old, aes(x = gag_score_coef*100, y = genes, color = "Normalized aging coefficient"))
+```
